@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<Context>
+    <Resource name="jdbc/mysqldb"
+              auth="Container"
+              username="root"
+              password="123"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/groceriesstore?characterEncoding=UTF-8&amp;verifyServerCertificate=false&amp;useSSL=false&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC"
+              maxActive="10"
+              maxIdle="3"
+              maxWait="100"
+              type="javax.sql.DataSource"/>
+</Context>

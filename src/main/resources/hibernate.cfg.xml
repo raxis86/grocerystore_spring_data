@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <!--<property name="connection.datasource">jdbc/mysqldb</property>-->
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/groceriesstore?characterEncoding=UTF-8&amp;verifyServerCertificate=false&amp;useSSL=false&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC</property>
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">123</property>
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <property name="hibernate.dbcp.initialSize">8</property>
+        <property name="hibernate.dbcp.maxActive">20</property>
+        <property name="hibernate.dbcp.maxIdle">20</property>
+        <property name="hibernate.dbcp.minIdle">0</property>
+
+
+
+        <mapping class="grocerystore.domain.entityes.Grocery"/>
+        <mapping class="grocerystore.domain.entityes.ListGrocery"/>
+        <mapping class="grocerystore.domain.entityes.Order"/>
+        <mapping class="grocerystore.domain.entityes.OrderStatus"/>
+        <mapping class="grocerystore.domain.entityes.Role"/>
+        <mapping class="grocerystore.domain.entityes.User"/>
+        <!--<mapping class="grocerystore.domain.entityes.GroceriesEntity"/>
+        <mapping class="grocerystore.domain.entityes.ListGroceryEntity"/>
+        <mapping class="grocerystore.domain.entityes.OrdersEntity"/>
+        <mapping class="grocerystore.domain.entityes.RolesEntity"/>
+        <mapping class="grocerystore.domain.entityes.UsersEntity"/>
+        <mapping class="grocerystore.domain.entityes.OrderupdatesEntity"/>-->
+        <!--<property name="hbm2ddl.auto">update</property>-->
+    </session-factory>
+
+
+</hibernate-configuration>
+
