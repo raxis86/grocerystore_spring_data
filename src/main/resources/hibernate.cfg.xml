@@ -19,7 +19,6 @@
         <property name="hibernate.dbcp.minIdle">0</property>
 
 
-
         <mapping class="grocerystore.domain.entityes.Grocery"/>
         <mapping class="grocerystore.domain.entityes.ListGrocery"/>
         <mapping class="grocerystore.domain.entityes.Order"/>
@@ -34,7 +33,6 @@
         <mapping class="grocerystore.domain.entityes.OrderupdatesEntity"/>-->
         <!--<property name="hbm2ddl.auto">update</property>-->
     </session-factory>
-
 
 </hibernate-configuration>
 

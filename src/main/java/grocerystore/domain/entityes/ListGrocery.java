@@ -14,12 +14,16 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "grocerylist", schema = "groceriesstore")
+@IdClass(ListGroceryPK.class)
 public class ListGrocery implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(ListGrocery.class);
 
-    private UUID id;        //ключ
-    private UUID groceryId; //ключ продукта
-    private int quantity;   //количество
+    private UUID id;            //ключ
+    private UUID groceryid;     //ключ продукта
+    private int quantity;       //количество
+
+    public ListGrocery() {
+    }
 
     @Id
     @Type(type="uuid-char")
@@ -35,12 +39,12 @@ public class ListGrocery implements Serializable {
     @Id
     @Type(type="uuid-char")
     @Column(name = "GROCERYID", nullable = false, length = 36)
-    public UUID getGroceryId() {
-        return groceryId;
+    public UUID getGroceryid() {
+        return groceryid;
     }
 
-    public void setGroceryId(UUID groceryId) {
-        this.groceryId = groceryId;
+    public void setGroceryid(UUID groceryId) {
+        this.groceryid = groceryId;
     }
 
     @Column(name = "QUANTITY", nullable = false)

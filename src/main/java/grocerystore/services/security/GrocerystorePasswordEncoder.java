@@ -6,10 +6,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 /**
  * Created by raxis on 13.01.2017.
  */
+@Service("PasswordEncoder")
 public class GrocerystorePasswordEncoder implements PasswordEncoder {
     private static final Logger logger = LoggerFactory.getLogger(GrocerystorePasswordEncoder.class);
     private static final PasswordEncoder BCRYPT = new BCryptPasswordEncoder();

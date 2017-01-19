@@ -9,6 +9,8 @@ import grocerystore.domain.models.User_model;
 import grocerystore.domain.exceptions.DAOException;
 import grocerystore.domain.exceptions.RoleException;
 import grocerystore.domain.exceptions.UserException;
+import grocerystore.domain.repositories.RoleRepository;
+import grocerystore.domain.repositories.UserRepository;
 import grocerystore.services.abstracts.IUserService;
 import grocerystore.services.exceptions.FormUserException;
 import grocerystore.services.exceptions.UserServiceException;
@@ -32,15 +34,15 @@ import java.util.UUID;
 public class UserService implements IUserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    private IRepositoryUser userHandler;
-    private IRepositoryRole roleHandler;
+    private UserRepository userHandler;
+    private RoleRepository roleHandler;
     private IValidator nameValidator;
     private IValidator addressValidator;
     private IValidator passwordValidator;
     private IValidator emailValidator;
 
-    public UserService(IRepositoryUser userHandler,
-                       IRepositoryRole roleHandler,
+    public UserService(UserRepository userHandler,
+                       RoleRepository roleHandler,
                        IValidator nameValidator,
                        IValidator addressValidator,
                        IValidator passwordValidator,
@@ -65,16 +67,16 @@ public class UserService implements IUserService {
         List<Role_model> roleModelList = new ArrayList<>();
 
         try {
-            roleModelByName = convert(roleHandler.roleByRoleName(roleName));
+            roleModelByName = convert(roleHandler.findByRoleName(roleName));
             roleModelList.add(roleModelByName);
-            userModelByEmail = convert(userHandler.getOneByEmail(email));
-        } catch (UserException e) {
+            userModelByEmail = convert(userHandler.findOneByEmail(email));
+        } catch (Exception e) {
             logger.error("cant getOneByEmail",e);
             throw new UserServiceException("Невозможно определить пользователя!",e);
-        } catch (RoleException e) {
+        } /*catch (RoleException e) {
             logger.error("cant role by name",e);
             throw new UserServiceException("Невозможно определить пользователя!",e);
-        }
+        }*/
 
 
         try {
@@ -128,8 +130,8 @@ public class UserService implements IUserService {
         User_model userModelByEmail;
 
         try {
-            userModelByEmail = convert(userHandler.getOneByEmail(email));
-        } catch (UserException e) {
+            userModelByEmail = convert(userHandler.findOneByEmail(email));
+        } catch (Exception e) {
             logger.error("cant getOneByEmail",e);
             throw new UserServiceException("Невозможно проверить пользователя!",e);
         }
@@ -140,12 +142,12 @@ public class UserService implements IUserService {
         }
 
         try {
-            User user = userHandler.getOne(email.toLowerCase(), Tool.computeHash(password));
+            User user = userHandler.findOneByEmailAndPassword(email.toLowerCase(), Tool.computeHash(password));
             if(user!=null){
                 userModel = convert(user);
                 userModel.setRoles(convertRoleList(user.getRoles()));
             }
-        } catch (UserException e) {
+        } catch (Exception e) {
             logger.error("cant getOn",e);
             throw new UserServiceException("Невозможно определить пользователя!",e);
         }
@@ -164,12 +166,12 @@ public class UserService implements IUserService {
         User_model userModel=null;
 
         try {
-            User user = userHandler.getOneByEmail(email);
+            User user = userHandler.findOneByEmail(email);
             if(user!=null){
                 userModel = convert(user);
                 userModel.setRoles(convertRoleList(user.getRoles()));
             }
-        } catch (UserException e) {
+        } catch (Exception e) {
             logger.error("cant getOneByEmail",e);
             throw new UserServiceException("Невозможно проверить пользователя!",e);
         }
@@ -199,8 +201,8 @@ public class UserService implements IUserService {
         userModel.setPhone(phone);
 
         try {
-            userHandler.update(convert(userModel));
-        } catch (DAOException e) {
+            //userHandler.update(convert(userModel));
+        } catch (Exception e) {
             logger.error("cant update userModel",e);
             throw new UserServiceException("Невозможно сохранить изменения!",e);
         }
@@ -260,7 +262,7 @@ public class UserService implements IUserService {
 
         List<Role> roleList = new ArrayList<>();
         for(Role_model role_model:user_model.getRoles()){
-            roleList.add(roleHandler.getOne(role_model.getId()));
+            roleList.add(roleHandler.findOne(role_model.getId()));
         }
         user.setRoles(roleList);
         return user;

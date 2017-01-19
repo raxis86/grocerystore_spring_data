@@ -4,6 +4,7 @@ import grocerystore.domain.abstracts.IRepositoryGrocery;
 import grocerystore.domain.entityes.Grocery;
 import grocerystore.domain.models.Grocery_model;
 import grocerystore.domain.exceptions.DAOException;
+import grocerystore.domain.repositories.GroceryRepository;
 import grocerystore.services.abstracts.ICartService;
 import grocerystore.services.exceptions.CartServiceException;
 import grocerystore.services.models.Cart;
@@ -22,9 +23,9 @@ import java.util.UUID;
 public class CartService implements ICartService {
     private static final Logger logger = LoggerFactory.getLogger(CartService.class);
 
-    private IRepositoryGrocery groceryHandler;
+    private GroceryRepository groceryHandler;
 
-    public CartService(IRepositoryGrocery groceryHandler){
+    public CartService(GroceryRepository groceryHandler){
         this.groceryHandler=groceryHandler;
     }
 
@@ -39,8 +40,8 @@ public class CartService implements ICartService {
         Grocery_model groceryModel;
 
         try {
-            groceryModel = convert(groceryHandler.getOne(UUID.fromString(groceryid)));
-        } catch (DAOException e) {
+            groceryModel = convert(groceryHandler.findOne(UUID.fromString(groceryid)));
+        } catch (Exception e) {
             logger.error("cant groceryModel.getOne",e);
             throw new CartServiceException("Невозможно добавить продукт в корзину!",e);
         }
@@ -60,8 +61,8 @@ public class CartService implements ICartService {
     public void removeFromCart(Cart cart, String groceryid) throws CartServiceException {
         Grocery_model groceryModel = null;
         try {
-            groceryModel = convert(groceryHandler.getOne(UUID.fromString(groceryid)));
-        } catch (DAOException e) {
+            groceryModel = convert(groceryHandler.findOne(UUID.fromString(groceryid)));
+        } catch (Exception e) {
             logger.error("cant groceryModel.getOne",e);
             throw new CartServiceException("Невозможно удалить продукт из корзины!",e);
         }

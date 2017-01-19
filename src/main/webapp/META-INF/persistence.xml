@@ -6,20 +6,22 @@
     <persistence-unit name="grocerystore">
         <description>JPA</description>
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>grocerystore.domain.entityes.GrocerylistEntity</class>
         <!--<provider>org.hibernate.ejb.HibernatePersistence</provider>-->
-        <class>grocerystore.domain.entityes.GroceriesEntity</class>
+        <!--<class>grocerystore.domain.entityes.GroceriesEntity</class>
         <class>grocerystore.domain.entityes.OrderitemsEntity</class>
         <class>grocerystore.domain.entityes.OrdersEntity</class>
         <class>grocerystore.domain.entityes.RolesEntity</class>
         <class>grocerystore.domain.entityes.UsersEntity</class>
         <class>grocerystore.domain.entityes.OrderupdatesEntity</class>
         <class>grocerystore.domain.entityes.OrderitemsEntity</class>
-        <class>grocerystore.domain.entityes.OrdersEntity</class>
+        <class>grocerystore.domain.entityes.OrdersEntity</class>-->
+
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/concretepage"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/groceriesstore?characterEncoding=UTF-8&amp;verifyServerCertificate=false&amp;useSSL=false&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC"/>
             <property name="javax.persistence.jdbc.userModel" value="root"/>
             <property name="javax.persistence.jdbc.password" value=""/>
 

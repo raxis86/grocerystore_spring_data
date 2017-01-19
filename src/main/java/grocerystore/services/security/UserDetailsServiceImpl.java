@@ -1,12 +1,14 @@
 package grocerystore.services.security;
 
-import grocerystore.domain.abstracts.IRepositoryUser;
 import grocerystore.domain.entityes.Role;
 import grocerystore.domain.entityes.User;
 import grocerystore.domain.models.User_model;
-import grocerystore.domain.exceptions.UserException;
+import grocerystore.domain.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,29 +16,31 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
  * Created by raxis on 13.01.2017.
  */
-//@Service("userDetailsService")
-@Service
+@Service("userDetailsService")
+//@Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     private static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
-    private IRepositoryUser userRepo;
+    private UserRepository userRepository;
 
-    public UserDetailsServiceImpl(IRepositoryUser userRepo){
-        this.userRepo = userRepo;
+    @Autowired
+    public UserDetailsServiceImpl(UserRepository userRepository){
+        this.userRepository = userRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user;
         try {
-            user = userRepo.getOneByEmail(email); //our own User_model model class
-        } catch (UserException e) {
+            user = userRepository.findOneByEmail(email); //our own User_model model class
+        } catch (Exception e) {
             logger.error("cant getOneByEmail",e);
             throw new UsernameNotFoundException("Пользователь не найден!");
         }

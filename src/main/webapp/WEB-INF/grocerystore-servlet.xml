@@ -2,18 +2,28 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:rep="http://www.springframework.org/schema/data/jpa"
+       xmlns:sec="http://www.springframework.org/schema/security"
        xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:jdbc="http://www.springframework.org/schema/c"
-       xmlns:security="http://www.springframework.org/schema/p"
+       xmlns:security="http://www.springframework.org/schema/p" xmlns:jee="http://www.springframework.org/schema/jee"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd
-        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+        http://www.springframework.org/schema/data/jpa
+        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/jee
+        http://www.springframework.org/schema/jee/spring-jee.xsd">
 
 
     <context:annotation-config/>
 
     <context:component-scan base-package="grocerystore"/>
+
 
     <bean class="org.springframework.http.converter.StringHttpMessageConverter">
         <constructor-arg value="UTF-8" /></bean>
@@ -29,5 +39,120 @@
             <value>.jsp</value>
         </property>
     </bean>
+
+
+
+
+    <sec:http>
+        <sec:intercept-url pattern="/" access="permitAll" />
+        <sec:intercept-url pattern="/CartList" access="hasRole('ROLE_USER')"/>
+        <sec:intercept-url pattern="/CartAdd" access="hasRole('ROLE_USER')"/>
+        <sec:intercept-url pattern="/CartRemove" access="hasRole('ROLE_USER')"/>
+        <sec:intercept-url pattern="/GroceryList" access="permitAll" />
+        <sec:intercept-url pattern="/GroceryListAdmin" access="hasRole('ROLE_ADMIN')" />
+        <sec:intercept-url pattern="/GroceryEdit" access="hasRole('ROLE_ADMIN')" />
+        <sec:intercept-url pattern="/GroceryDel" access="hasRole('ROLE_ADMIN')" />
+        <sec:intercept-url pattern="/GroceryAdd" access="hasRole('ROLE_ADMIN')" />
+        <sec:intercept-url pattern="/OrderList" access="hasRole('ROLE_USER')"/>
+        <sec:intercept-url pattern="/OrderListAdmin" access="hasRole('ROLE_ADMIN')"/>
+        <sec:intercept-url pattern="/OrderEdit" access="hasRole('ROLE_ADMIN') and hasRole('ROLE_USER')"/>
+        <sec:intercept-url pattern="/OrderAdd" access="hasRole('ROLE_USER')"/>
+        <sec:access-denied-handler error-page="/Deny" />
+        <sec:csrf disabled="true"/>
+        <sec:form-login
+                login-page="/Login"
+                username-parameter="email"
+                password-parameter="password"
+                default-target-url="/Index"/>
+    </sec:http>
+
+    <sec:authentication-manager>
+        <sec:authentication-provider user-service-ref="userDetailsService">
+            <sec:password-encoder ref="encoder" />
+        </sec:authentication-provider>
+    </sec:authentication-manager>
+
+    <bean id="encoder" class="grocerystore.services.security.GrocerystorePasswordEncoder" />
+    <bean id="userDetailsService" class="grocerystore.services.security.UserDetailsServiceImpl"/>
+
+
+    <!--<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/groceriesstore?characterEncoding=UTF-8&amp;verifyServerCertificate=false&amp;useSSL=false&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123"/>
+    </bean>
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan" value="grocerystore.domain.entityes"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+        </property>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+            </props>
+        </property>
+    </bean>-->
+
+    <jee:jndi-lookup id="dataSource"
+                     jndi-name="jdbc/mysqldb"
+                     resource-ref="true" />
+
+    <!--<rep:repositories base-package="grocerystore.domain.repositories"
+                      entity-manager-factory-ref="entityManagerFactory"/>-->
+
+    <rep:repositories base-package="grocerystore.domain.repositories"/>
+
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan" value="grocerystore.domain.entityes"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+        </property>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
+
+   <!-- <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+    <bean id="emf" class=
+            "org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceUnitName" value="publishing"/>
+        <property name="dataSource" ref="dataSource" />
+        <property name="jpaVendorAdapter" ref="jpaVendorAdapter"/>
+        <property name="packagesToScan">
+            <list>
+                <value>grocerystore.domain.entityes</value>
+            </list>
+        </property>
+        <property name="jpaProperties">
+            <props>
+                <prop key="javax.persistence.validation.mode">none</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="jpaVendorAdapter"
+          class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="database" value="MYSQL" />
+        <property name="showSql" value="true"/>&lt;!&ndash;
+        <property name="generateDdl" value="false"/>
+        <property name="javax.persistence.validation.mode" value="NONE" />&ndash;&gt;
+        <property name="databasePlatform"
+                  value="org.hibernate.dialect.MySQLDialect" />
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="emf" />
+    </bean>-->
+
 </beans>
 

@@ -9,6 +9,7 @@ import grocerystore.domain.models.*;
 import grocerystore.domain.exceptions.DAOException;
 import grocerystore.domain.exceptions.ListGroceryException;
 import grocerystore.domain.exceptions.OrderException;
+import grocerystore.domain.repositories.*;
 import grocerystore.services.abstracts.IOrderService;
 import grocerystore.services.exceptions.OrderServiceException;
 import grocerystore.services.models.Cart;
@@ -27,17 +28,17 @@ import java.util.*;
 public class OrderService implements IOrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
-    private IRepositoryOrder orderHandler;
-    private IRepositoryOrderStatus orderStatusHandler;
-    private IRepositoryListGrocery listGroceryHandler;
-    private IRepositoryGrocery groceryHandler;
-    private IRepositoryUser userHandler;
+    private OrderRepository orderHandler;
+    private OrderStatusRepository orderStatusHandler;
+    private ListGroceryRepository listGroceryHandler;
+    private GroceryRepository groceryHandler;
+    private UserRepository userHandler;
 
-    public OrderService(IRepositoryOrder orderHandler,
-                        IRepositoryOrderStatus orderStatusHandler,
-                        IRepositoryListGrocery listGroceryHandler,
-                        IRepositoryGrocery groceryHandler,
-                        IRepositoryUser userHandler){
+    public OrderService(OrderRepository orderHandler,
+                        OrderStatusRepository orderStatusHandler,
+                        ListGroceryRepository listGroceryHandler,
+                        GroceryRepository groceryHandler,
+                        UserRepository userHandler){
         this.orderHandler=orderHandler;
         this.orderStatusHandler=orderStatusHandler;
         this.listGroceryHandler=listGroceryHandler;
@@ -58,8 +59,8 @@ public class OrderService implements IOrderService {
         orderModel.setAddress(userModel.getAddress());
 
         try {
-            orderHandler.create(convert(orderModel));
-        } catch (DAOException e) {
+            //orderHandler.create(convert(orderModel));
+        } catch (Exception e) {
             logger.error("cant createOrder",e);
             throw new OrderServiceException("Невозможно сформировать заказ!",e);
         }
@@ -83,11 +84,11 @@ public class OrderService implements IOrderService {
         List<Order_model> orderModelList =new ArrayList<>();
 
         try {
-            for(Order o:orderHandler.getAll()){
+            for(Order o:orderHandler.findAll()){
                 orderModelList.add(convert(o));
             }
             //orderModelList =orderHandler.getAll();
-        } catch (DAOException e) {
+        } catch (Exception e) {
             logger.error("cant getAll",e);
             throw new OrderServiceException("Невозможно сформировать список заказов!",e);
         }
@@ -97,12 +98,12 @@ public class OrderService implements IOrderService {
                 try {
                     UUID userid = repoOrderModel.getUserid();
                     if(userid!=null){
-                        User user = userHandler.getOne(userid);
+                        User user = userHandler.findOne(userid);
                         if(user !=null){
                             orderViewList.add(formOrderView(repoOrderModel.getId(), user.getEmail()));
                         }
                     }
-                } catch (DAOException e) {
+                } catch (Exception e) {
                     logger.error("cant user.getOne",e);
                     throw new OrderServiceException("Невозможно сформировать список заказов!",e);
                 }
@@ -118,11 +119,11 @@ public class OrderService implements IOrderService {
         List<Order_model> orderModelList =new ArrayList<>();
 
         try {
-            for(Order o:orderHandler.getByUserId(userModel.getId())){
+            for(Order o:orderHandler.findAllByUserid(userModel.getId())){
                 orderModelList.add(convert(o));
             }
             //orderModelList =orderHandler.getByUserId(userModel.getId());
-        } catch (OrderException e) {
+        } catch (Exception e) {
             logger.error("cant order.getByUserId",e);
             throw new OrderServiceException("Невозможно сформировать список заказов!",e);
         }
@@ -141,8 +142,8 @@ public class OrderService implements IOrderService {
         Order_model orderModel = null;
 
         try {
-            orderModel =convert(orderHandler.getOne(UUID.fromString(orderid)));
-        } catch (DAOException e) {
+            orderModel =convert(orderHandler.findOne(UUID.fromString(orderid)));
+        } catch (Exception e) {
             logger.error("cant orderModel.getOne",e);
             throw new OrderServiceException("Невозможно сохранить изменения!",e);
         }
@@ -150,8 +151,8 @@ public class OrderService implements IOrderService {
         orderModel.setOrderstatusid(UUID.fromString("1c8d12cf-6b0a-4168-ae2a-cb416cf30da5"));
 
         try {
-            orderHandler.update(convert(orderModel));
-        } catch (DAOException e) {
+            //orderHandler.update(convert(orderModel));
+        } catch (Exception e) {
             logger.error("cant update orderModel",e);
             throw new OrderServiceException("Невозможно сохранить изменения!",e);
         }
@@ -162,8 +163,8 @@ public class OrderService implements IOrderService {
         Order_model orderModel = null;
 
         try {
-            orderModel =convert(orderHandler.getOne(UUID.fromString(orderid)));
-        } catch (DAOException e) {
+            orderModel =convert(orderHandler.findOne(UUID.fromString(orderid)));
+        } catch (Exception e) {
             logger.error("cant orderModel.getOne",e);
             throw new OrderServiceException("Невозможно сохранить изменения!",e);
         }
@@ -171,8 +172,8 @@ public class OrderService implements IOrderService {
         orderModel.setOrderstatusid(UUID.fromString(statusid));
 
         try {
-            orderHandler.update(convert(orderModel));
-        } catch (DAOException e) {
+            //orderHandler.update(convert(orderModel));
+        } catch (Exception e) {
             logger.error("cant update orderModel",e);
             throw new OrderServiceException("Невозможно сохранить изменения!",e);
         }
@@ -183,8 +184,8 @@ public class OrderService implements IOrderService {
         Order_model orderModel =null;
 
         try {
-            orderModel = convert(orderHandler.getOne(UUID.fromString(orderid)));
-        } catch (DAOException e) {
+            orderModel = convert(orderHandler.findOne(UUID.fromString(orderid)));
+        } catch (Exception e) {
             logger.error("cant orderModel.getOne",e);
             throw new OrderServiceException("Невозможно найти заказ!",e);
         }
@@ -201,23 +202,23 @@ public class OrderService implements IOrderService {
         List<OrderStatus_model> orderStatusModelList = new ArrayList<>();
 
         try {
-            orderModel = convert(orderHandler.getOne(orderid));
-            for(ListGrocery lg:listGroceryHandler.getListById(orderModel.getGrocerylistid())){
+            orderModel = convert(orderHandler.findOne(orderid));
+            for(ListGrocery lg:listGroceryHandler.findAllById(orderModel.getGrocerylistid())){
                 listGroceries.add(convert(lg));
             }
             /*listGroceries = listGroceryHandler.getListById(orderModel.getGrocerylistid());*/
-            orderStatusModel = convert(orderStatusHandler.getOne(orderModel.getOrderstatusid()));
-            for(OrderStatus os:orderStatusHandler.getAll()) {
+            orderStatusModel = convert(orderStatusHandler.findOne(orderModel.getOrderstatusid()));
+            for(OrderStatus os:orderStatusHandler.findAll()) {
                 orderStatusModelList.add(convert(os));
             }
             //orderStatusModelList = orderStatusHandler.getAll();
-        } catch (ListGroceryException e) {
+        } catch (Exception e) {
             logger.error("cant ListGrocery_model.getListById",e);
             throw new OrderServiceException("Невозможно сформировать заказ!",e);
-        } catch (DAOException e) {
+        }/* catch (DAOException e) {
             logger.error("cant orderModel get",e);
             throw new OrderServiceException("Невозможно сформировать заказ!",e);
-        }
+        }*/
 
 
         OrderView orderView = new OrderView();
@@ -232,8 +233,8 @@ public class OrderService implements IOrderService {
         for(ListGrocery_model list: listGroceries){
             String str;
             try {
-                str = groceryHandler.getOne(list.getGroceryId()).getName();
-            } catch (DAOException e) {
+                str = groceryHandler.findOne(list.getGroceryId()).getName();
+            } catch (Exception e) {
                 logger.error("cant grocery.getOne",e);
                 throw new OrderServiceException("Невозможно сформировать заказ!",e);
             }
@@ -253,7 +254,7 @@ public class OrderService implements IOrderService {
     private ListGrocery_model convert(ListGrocery listGrocery){
         ListGrocery_model listGrocery_model = new ListGrocery_model();
         listGrocery_model.setId(listGrocery.getId());
-        listGrocery_model.setGroceryId(listGrocery.getGroceryId());
+        listGrocery_model.setGroceryId(listGrocery.getGroceryid());
         listGrocery_model.setQuantity(listGrocery.getQuantity());
 
         return listGrocery_model;

@@ -1,13 +1,11 @@
 package grocerystore.services.concrete;
 
-import grocerystore.domain.abstracts.IRepositoryGrocery;
-import grocerystore.domain.abstracts.IRepositoryListGrocery;
 import grocerystore.domain.entityes.Grocery;
 import grocerystore.domain.entityes.ListGrocery;
 import grocerystore.domain.models.Grocery_model;
 import grocerystore.domain.models.ListGrocery_model;
-import grocerystore.domain.exceptions.DAOException;
-import grocerystore.domain.exceptions.ListGroceryException;
+import grocerystore.domain.repositories.GroceryRepository;
+import grocerystore.domain.repositories.ListGroceryRepository;
 import grocerystore.services.abstracts.IGroceryService;
 import grocerystore.services.exceptions.FormGroceryException;
 import grocerystore.services.exceptions.GroceryServiceException;
@@ -32,14 +30,14 @@ import java.util.UUID;
 public class GroceryService implements IGroceryService {
     private static final Logger logger = LoggerFactory.getLogger(GroceryService.class);
 
-    private IRepositoryGrocery groceryHandler;
-    private IRepositoryListGrocery listGroceryHandler;
+    private GroceryRepository groceryHandler;
+    private ListGroceryRepository listGroceryHandler;
     private IValidator groceryNameValidator;
     private IValidator priceValidator;
     private IValidator quantityValidator;
 
-    public GroceryService(IRepositoryGrocery groceryHandler,
-                          IRepositoryListGrocery listGroceryHandler,
+    public GroceryService(GroceryRepository groceryHandler,
+                          ListGroceryRepository listGroceryHandler,
                           IValidator groceryNameValidator,
                           IValidator priceValidator,
                           IValidator quantityValidator){
@@ -55,10 +53,10 @@ public class GroceryService implements IGroceryService {
     public List<Grocery_model> getGroceryList() throws GroceryServiceException {
         List<Grocery_model> groceryModelList =new ArrayList<>();
         try {
-            for(Grocery g: groceryHandler.getAll()){
+            for(Grocery g: groceryHandler.findAll()){
                 if(g!=null)groceryModelList.add(convert(g));
             }
-        } catch (DAOException e) {
+        } catch (Exception e) {
             logger.error("cant getGroceryList ",e);
             throw new GroceryServiceException("Невозможно получить список продуктов!",e);
         }
@@ -69,8 +67,8 @@ public class GroceryService implements IGroceryService {
     public Grocery_model getGrocery(String groceryid) throws GroceryServiceException {
         Grocery_model groceryModel;
         try {
-            groceryModel =convert(groceryHandler.getOne(UUID.fromString(groceryid)));
-        } catch (DAOException e) {
+            groceryModel =convert(groceryHandler.findOne(UUID.fromString(groceryid)));
+        } catch (Exception e) {
             logger.error("cant getGrocery",e);
             throw new GroceryServiceException("Продукт не найлен!",e);
         }
@@ -111,8 +109,8 @@ public class GroceryService implements IGroceryService {
         groceryModel.setQuantity(Integer.parseInt(quantity));
 
         try {
-            groceryHandler.create(convert(groceryModel));
-        } catch (DAOException e) {
+            //groceryHandler.create(convert(groceryModel));
+        } catch (Exception e) {
             logger.error("cant groceryCreate",e);
             throw new GroceryServiceException("Невозможно сохранить новый продукт!",e);
         }
@@ -125,21 +123,21 @@ public class GroceryService implements IGroceryService {
         List<ListGrocery_model> listGroceries = null;
 
         try {
-            groceryModel = convert(groceryHandler.getOne(UUID.fromString(groceryid)));
-            for(ListGrocery lg:listGroceryHandler.getListByGroceryId(groceryModel.getId())){
+            /*groceryModel = convert(groceryHandler.findOne(UUID.fromString(groceryid)));
+            for(ListGrocery lg:listGroceryHandler.findAllByGroceryId(groceryModel.getId())){
                 if(lg!=null)listGroceries.add(convert(lg));
             }
             groceryHandler.delete(groceryModel.getId());
             for(ListGrocery_model gl : listGroceries){
                 listGroceryHandler.delete(gl.getId());
-            }
-        } catch (ListGroceryException e) {
+            }*/
+        } catch (Exception e) {
             logger.error("cant getListByGeroceryId",e);
             throw new GroceryServiceException("Невозможно получить список соответствий продуктов!",e);
-        } catch (DAOException e) {
+        } /*catch (DAOException e) {
             logger.error("cant groceryDelete");
             throw new GroceryServiceException("Невозможно удалить продукт!",e);
-        }
+        }*/
 
     }
 
@@ -170,19 +168,19 @@ public class GroceryService implements IGroceryService {
         }
 
         try {
-            groceryModel =convert(groceryHandler.getOne(UUID.fromString(groceryid)));
+            groceryModel =convert(groceryHandler.findOne(UUID.fromString(groceryid)));
 
             if(groceryModel !=null){
                 groceryModel.setName(name);
                 groceryModel.setPrice(new BigDecimalStringConverter().fromString(price));
                 groceryModel.setQuantity(Integer.parseInt(quantity));
 
-                groceryHandler.update(convert(groceryModel));
+                //groceryHandler.update(convert(groceryModel));
             }
             else {
                 throw new FormGroceryException(new Message("Продукт не найден в базе!", Message.Status.ERROR));
             }
-        } catch (DAOException e) {
+        } catch (Exception e) {
             logger.error("cant groceryUpdate",e);
             throw new GroceryServiceException("Невозможно изменить информацию о продукте!",e);
         }
@@ -215,7 +213,7 @@ public class GroceryService implements IGroceryService {
     private ListGrocery_model convert(ListGrocery listGrocery){
         ListGrocery_model listGrocery_model = new ListGrocery_model();
         listGrocery_model.setId(listGrocery.getId());
-        listGrocery_model.setGroceryId(listGrocery.getGroceryId());
+        listGrocery_model.setGroceryId(listGrocery.getGroceryid());
         listGrocery_model.setQuantity(listGrocery.getQuantity());
 
         return listGrocery_model;

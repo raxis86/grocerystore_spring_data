@@ -6,6 +6,7 @@ import grocerystore.domain.models.Grocery_model;
 import grocerystore.domain.models.ListGrocery_model;
 import grocerystore.domain.models.Order_model;
 import grocerystore.domain.exceptions.DAOException;
+import grocerystore.domain.repositories.ListGroceryRepository;
 import grocerystore.services.abstracts.IListGroceryService;
 import grocerystore.services.exceptions.ListGroceryServiceException;
 import grocerystore.services.models.Cart;
@@ -24,9 +25,9 @@ import java.util.Map;
 public class ListGroceryService implements IListGroceryService {
     private static final Logger logger = LoggerFactory.getLogger(ListGroceryService.class);
 
-    private IRepositoryListGrocery listGroceryHandler;
+    private ListGroceryRepository listGroceryHandler;
 
-    public ListGroceryService(IRepositoryListGrocery listGroceryHandler){
+    public ListGroceryService(ListGroceryRepository listGroceryHandler){
         this.listGroceryHandler=listGroceryHandler;
     }
 
@@ -47,8 +48,8 @@ public class ListGroceryService implements IListGroceryService {
             listGroceryModel.setQuantity((int)entry.getValue());
 
             try {
-                listGroceryHandler.create(convert(listGroceryModel));
-            } catch (DAOException e) {
+                //listGroceryHandler.create(convert(listGroceryModel));
+            } catch (Exception e) {
                 logger.error("cant create",e);
                 throw new ListGroceryServiceException("Невозможно завершить формирование корзины!",e);
             }
@@ -58,7 +59,7 @@ public class ListGroceryService implements IListGroceryService {
     private ListGrocery convert(ListGrocery_model ListGrocery_model){
         ListGrocery listGrocery = new ListGrocery();
         listGrocery.setId(ListGrocery_model.getId());
-        listGrocery.setGroceryId(ListGrocery_model.getGroceryId());
+        listGrocery.setGroceryid(ListGrocery_model.getGroceryId());
         listGrocery.setQuantity(ListGrocery_model.getQuantity());
 
         return listGrocery;

@@ -7,6 +7,8 @@ import grocerystore.domain.entityes.User;
 import grocerystore.domain.models.Role_model;
 import grocerystore.domain.models.User_model;
 import grocerystore.domain.exceptions.DAOException;
+import grocerystore.domain.repositories.RoleRepository;
+import grocerystore.domain.repositories.UserRepository;
 import grocerystore.services.abstracts.IAccountService;
 import grocerystore.services.exceptions.AccountServiceException;
 import org.slf4j.Logger;
@@ -24,10 +26,10 @@ import java.util.List;
 public class AccountService implements IAccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
-    private IRepositoryUser userHandler;
-    private IRepositoryRole roleHandler;
+    private UserRepository userHandler;
+    private RoleRepository roleHandler;
 
-    public AccountService(IRepositoryUser userHandler, IRepositoryRole roleHandler){
+    public AccountService(UserRepository userHandler, RoleRepository roleHandler){
         this.userHandler=userHandler;
         this.roleHandler=roleHandler;
     }
@@ -59,12 +61,8 @@ public class AccountService implements IAccountService {
     @Override
     public boolean signIn(User_model userModel) throws AccountServiceException {
         try {
-            //List<Role> roleList = new ArrayList<>();
             User user = convert(userModel);
-            /*Role role = roleHandler.getOne(userModel.getRoles().get(0).getId());
-            roleList.add(role);
-            user.setRoles(roleList);*/
-            userHandler.create(user);
+            //userHandler.create(user);
         } catch (DAOException e) {
             logger.error("cant signIn!",e);
             throw new AccountServiceException("Невозможно зарегистрировать пользователя!",e);
@@ -87,7 +85,7 @@ public class AccountService implements IAccountService {
 
         List<Role> roleList = new ArrayList<>();
         for(Role_model role_model:user_model.getRoles()){
-            roleList.add(roleHandler.getOne(role_model.getId()));
+            roleList.add(roleHandler.findOne(role_model.getId()));
         }
         user.setRoles(roleList);
 
