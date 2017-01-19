@@ -201,7 +201,7 @@ public class UserService implements IUserService {
         userModel.setPhone(phone);
 
         try {
-            //userHandler.update(convert(userModel));
+            userHandler.save(convert(userModel));
         } catch (Exception e) {
             logger.error("cant update userModel",e);
             throw new UserServiceException("Невозможно сохранить изменения!",e);
@@ -209,18 +209,23 @@ public class UserService implements IUserService {
     }
 
     private User_model convert(User user){
-        User_model user_model = new User_model();
-        user_model.setId(user.getId());
-        user_model.setEmail(user.getEmail());
-        user_model.setStatus(User_model.Status.valueOf(user.getStatus()));
-        user_model.setPassword(user.getPassword());
-        user_model.setName(user.getName());
-        user_model.setLastname(user.getLastname());
-        user_model.setSurname(user.getSurname());
-        user_model.setAddress(user.getAddress());
-        user_model.setPhone(user.getPhone());
-
-        return user_model;
+        if(user!=null){
+            User_model user_model = new User_model();
+            user_model.setId(user.getId());
+            user_model.setEmail(user.getEmail());
+            user_model.setStatus(User_model.Status.valueOf(user.getStatus()));
+            user_model.setPassword(user.getPassword());
+            user_model.setName(user.getName());
+            user_model.setLastname(user.getLastname());
+            user_model.setSurname(user.getSurname());
+            user_model.setAddress(user.getAddress());
+            user_model.setPhone(user.getPhone());
+            return user_model;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     private List<Role_model> convertRoleList(List<Role> roleList){
@@ -233,11 +238,17 @@ public class UserService implements IUserService {
     }
 
     private Role_model convert(Role role){
-        Role_model role_model = new Role_model();
-        role_model.setId(role.getId());
-        role_model.setRoleName(role.getRoleName());
+        if(role!=null){
+            Role_model role_model = new Role_model();
+            role_model.setId(role.getId());
+            role_model.setRoleName(role.getRoleName());
 
-        return role_model;
+            return role_model;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     private List<User_model> convertUserList(List<User> userList){
@@ -249,22 +260,28 @@ public class UserService implements IUserService {
     }
 
     private User convert(User_model user_model) throws DAOException {
-        User user = new User();
-        user.setId(user_model.getId());
-        user.setEmail(user_model.getEmail());
-        user.setPassword(user_model.getPassword());
-        user.setStatus(user_model.getStatus().toString());
-        user.setName(user_model.getName());
-        user.setLastname(user_model.getLastname());
-        user.setSurname(user_model.getSurname());
-        user.setPhone(user_model.getPhone());
-        user.setAddress(user_model.getAddress());
+        if(user_model!=null){
+            User user = new User();
+            user.setId(user_model.getId());
+            user.setEmail(user_model.getEmail());
+            user.setPassword(user_model.getPassword());
+            user.setStatus(user_model.getStatus().toString());
+            user.setName(user_model.getName());
+            user.setLastname(user_model.getLastname());
+            user.setSurname(user_model.getSurname());
+            user.setPhone(user_model.getPhone());
+            user.setAddress(user_model.getAddress());
 
-        List<Role> roleList = new ArrayList<>();
-        for(Role_model role_model:user_model.getRoles()){
-            roleList.add(roleHandler.findOne(role_model.getId()));
+            List<Role> roleList = new ArrayList<>();
+            for(Role_model role_model:user_model.getRoles()){
+                roleList.add(roleHandler.findOne(role_model.getId()));
+            }
+            user.setRoles(roleList);
+            return user;
         }
-        user.setRoles(roleList);
-        return user;
+        else
+        {
+            return null;
+        }
     }
 }

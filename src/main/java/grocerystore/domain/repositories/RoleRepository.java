@@ -10,6 +10,12 @@ import java.util.UUID;
  */
 public interface RoleRepository extends CrudRepository<Role,UUID> {
     @Override
+    <S extends Role> S save(S entity);
+
+    @Override
+    <S extends Role> Iterable<S> save(Iterable<S> entities);
+
+    @Override
     Role findOne(UUID uuid);
 
     Role findByRoleName(String roleName);

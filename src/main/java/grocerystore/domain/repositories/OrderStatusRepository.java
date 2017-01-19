@@ -10,6 +10,12 @@ import java.util.UUID;
  */
 public interface OrderStatusRepository extends CrudRepository<OrderStatus,UUID> {
     @Override
+    <S extends OrderStatus> S save(S entity);
+
+    @Override
+    <S extends OrderStatus> Iterable<S> save(Iterable<S> entities);
+
+    @Override
     OrderStatus findOne(UUID uuid);
 
     @Override

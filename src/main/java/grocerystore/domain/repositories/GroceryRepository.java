@@ -11,6 +11,9 @@ import java.util.UUID;
  */
 public interface GroceryRepository extends CrudRepository<Grocery,UUID>/*PagingAndSortingRepository<Grocery,UUID>*/ {
     @Override
+    <S extends Grocery> S save(S entity);
+
+    @Override
     Grocery findOne(UUID uuid);
 
     @Override

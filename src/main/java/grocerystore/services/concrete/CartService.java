@@ -72,14 +72,20 @@ public class CartService implements ICartService {
     }
 
     private Grocery_model convert(Grocery grocery){
-        Grocery_model grocery_model = new Grocery_model();
-        grocery_model.setId(grocery.getId());
-        grocery_model.setParentid(grocery.getParentid());
-        grocery_model.setName(grocery.getName());
-        grocery_model.setPrice(grocery.getPrice());
-        grocery_model.setIscategory(grocery.isIscategory());
-        grocery_model.setQuantity(grocery.getQuantity());
+        if(grocery!=null){
+            Grocery_model grocery_model = new Grocery_model();
+            grocery_model.setId(grocery.getId());
+            grocery_model.setParentid(grocery.getParentid());
+            grocery_model.setName(grocery.getName());
+            grocery_model.setPrice(grocery.getPrice());
+            grocery_model.setIscategory(grocery.isIscategory());
+            grocery_model.setQuantity(grocery.getQuantity());
 
-        return grocery_model;
+            return grocery_model;
+        }
+        else
+        {
+            return null;
+        }
     }
 }

@@ -48,7 +48,7 @@ public class ListGroceryService implements IListGroceryService {
             listGroceryModel.setQuantity((int)entry.getValue());
 
             try {
-                //listGroceryHandler.create(convert(listGroceryModel));
+                listGroceryHandler.save(convert(listGroceryModel));
             } catch (Exception e) {
                 logger.error("cant create",e);
                 throw new ListGroceryServiceException("Невозможно завершить формирование корзины!",e);
@@ -57,11 +57,16 @@ public class ListGroceryService implements IListGroceryService {
     }
 
     private ListGrocery convert(ListGrocery_model ListGrocery_model){
-        ListGrocery listGrocery = new ListGrocery();
-        listGrocery.setId(ListGrocery_model.getId());
-        listGrocery.setGroceryid(ListGrocery_model.getGroceryId());
-        listGrocery.setQuantity(ListGrocery_model.getQuantity());
+        if(ListGrocery_model!=null){
+            ListGrocery listGrocery = new ListGrocery();
+            listGrocery.setId(ListGrocery_model.getId());
+            listGrocery.setGroceryid(ListGrocery_model.getGroceryId());
+            listGrocery.setQuantity(ListGrocery_model.getQuantity());
 
-        return listGrocery;
+            return listGrocery;
+        }
+        else {
+            return null;
+        }
     }
 }

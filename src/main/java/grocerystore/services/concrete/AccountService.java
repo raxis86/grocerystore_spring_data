@@ -62,7 +62,7 @@ public class AccountService implements IAccountService {
     public boolean signIn(User_model userModel) throws AccountServiceException {
         try {
             User user = convert(userModel);
-            //userHandler.create(user);
+            userHandler.save(user);
         } catch (DAOException e) {
             logger.error("cant signIn!",e);
             throw new AccountServiceException("Невозможно зарегистрировать пользователя!",e);
@@ -72,24 +72,30 @@ public class AccountService implements IAccountService {
     }
 
     private User convert(User_model user_model) throws DAOException {
-        User user = new User();
-        user.setId(user_model.getId());
-        user.setEmail(user_model.getEmail());
-        user.setPassword(user_model.getPassword());
-        user.setStatus(user_model.getStatus().toString());
-        user.setName(user_model.getName());
-        user.setLastname(user_model.getLastname());
-        user.setSurname(user_model.getSurname());
-        user.setPhone(user_model.getPhone());
-        user.setAddress(user_model.getAddress());
+        if(user_model!=null){
+            User user = new User();
+            user.setId(user_model.getId());
+            user.setEmail(user_model.getEmail());
+            user.setPassword(user_model.getPassword());
+            user.setStatus(user_model.getStatus().toString());
+            user.setName(user_model.getName());
+            user.setLastname(user_model.getLastname());
+            user.setSurname(user_model.getSurname());
+            user.setPhone(user_model.getPhone());
+            user.setAddress(user_model.getAddress());
 
-        List<Role> roleList = new ArrayList<>();
-        for(Role_model role_model:user_model.getRoles()){
-            roleList.add(roleHandler.findOne(role_model.getId()));
+            List<Role> roleList = new ArrayList<>();
+            for(Role_model role_model:user_model.getRoles()){
+                roleList.add(roleHandler.findOne(role_model.getId()));
+            }
+            user.setRoles(roleList);
+
+            return user;
         }
-        user.setRoles(roleList);
+        else {
+            return null;
+        }
 
-        return user;
     }
 
 }

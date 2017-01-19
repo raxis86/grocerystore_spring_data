@@ -5,10 +5,14 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.UUID;
 
+
 /**
  * Created by raxis on 19.01.2017.
  */
 public interface UserRepository extends CrudRepository<User,UUID>{
+    @Override
+    <S extends User> S save(S entity);
+
     @Override
     User findOne(UUID uuid);
 

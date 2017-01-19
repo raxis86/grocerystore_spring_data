@@ -59,7 +59,7 @@ public class OrderService implements IOrderService {
         orderModel.setAddress(userModel.getAddress());
 
         try {
-            //orderHandler.create(convert(orderModel));
+            orderHandler.save(convert(orderModel));
         } catch (Exception e) {
             logger.error("cant createOrder",e);
             throw new OrderServiceException("Невозможно сформировать заказ!",e);
@@ -87,7 +87,6 @@ public class OrderService implements IOrderService {
             for(Order o:orderHandler.findAll()){
                 orderModelList.add(convert(o));
             }
-            //orderModelList =orderHandler.getAll();
         } catch (Exception e) {
             logger.error("cant getAll",e);
             throw new OrderServiceException("Невозможно сформировать список заказов!",e);
@@ -122,7 +121,6 @@ public class OrderService implements IOrderService {
             for(Order o:orderHandler.findAllByUserid(userModel.getId())){
                 orderModelList.add(convert(o));
             }
-            //orderModelList =orderHandler.getByUserId(userModel.getId());
         } catch (Exception e) {
             logger.error("cant order.getByUserId",e);
             throw new OrderServiceException("Невозможно сформировать список заказов!",e);
@@ -151,7 +149,7 @@ public class OrderService implements IOrderService {
         orderModel.setOrderstatusid(UUID.fromString("1c8d12cf-6b0a-4168-ae2a-cb416cf30da5"));
 
         try {
-            //orderHandler.update(convert(orderModel));
+            orderHandler.save(convert(orderModel));
         } catch (Exception e) {
             logger.error("cant update orderModel",e);
             throw new OrderServiceException("Невозможно сохранить изменения!",e);
@@ -172,7 +170,7 @@ public class OrderService implements IOrderService {
         orderModel.setOrderstatusid(UUID.fromString(statusid));
 
         try {
-            //orderHandler.update(convert(orderModel));
+            orderHandler.save(convert(orderModel));
         } catch (Exception e) {
             logger.error("cant update orderModel",e);
             throw new OrderServiceException("Невозможно сохранить изменения!",e);
@@ -206,12 +204,10 @@ public class OrderService implements IOrderService {
             for(ListGrocery lg:listGroceryHandler.findAllById(orderModel.getGrocerylistid())){
                 listGroceries.add(convert(lg));
             }
-            /*listGroceries = listGroceryHandler.getListById(orderModel.getGrocerylistid());*/
             orderStatusModel = convert(orderStatusHandler.findOne(orderModel.getOrderstatusid()));
             for(OrderStatus os:orderStatusHandler.findAll()) {
                 orderStatusModelList.add(convert(os));
             }
-            //orderStatusModelList = orderStatusHandler.getAll();
         } catch (Exception e) {
             logger.error("cant ListGrocery_model.getListById",e);
             throw new OrderServiceException("Невозможно сформировать заказ!",e);
@@ -252,45 +248,65 @@ public class OrderService implements IOrderService {
     }
 
     private ListGrocery_model convert(ListGrocery listGrocery){
-        ListGrocery_model listGrocery_model = new ListGrocery_model();
-        listGrocery_model.setId(listGrocery.getId());
-        listGrocery_model.setGroceryId(listGrocery.getGroceryid());
-        listGrocery_model.setQuantity(listGrocery.getQuantity());
+        if(listGrocery!=null){
+            ListGrocery_model listGrocery_model = new ListGrocery_model();
+            listGrocery_model.setId(listGrocery.getId());
+            listGrocery_model.setGroceryId(listGrocery.getGroceryid());
+            listGrocery_model.setQuantity(listGrocery.getQuantity());
 
-        return listGrocery_model;
+            return listGrocery_model;
+        }
+        else {
+            return null;
+        }
     }
 
     private Order_model convert(Order order){
-        Order_model order_model = new Order_model();
-        order_model.setId(order.getId());
-        order_model.setGrocerylistid(order.getGrocerylistid());
-        order_model.setOrderstatusid(order.getOrderstatusid());
-        order_model.setUserid(order.getUserid());
-        order_model.setAddress(order.getAddress());
-        order_model.setDatetime(order.getDatetime());
-        order_model.setPrice(order.getPrice());
+        if(order!=null){
+            Order_model order_model = new Order_model();
+            order_model.setId(order.getId());
+            order_model.setGrocerylistid(order.getGrocerylistid());
+            order_model.setOrderstatusid(order.getOrderstatusid());
+            order_model.setUserid(order.getUserid());
+            order_model.setAddress(order.getAddress());
+            order_model.setDatetime(order.getDatetime());
+            order_model.setPrice(order.getPrice());
 
-        return order_model;
+            return order_model;
+        }
+        else {
+            return null;
+        }
     }
 
     private Order convert(Order_model order_model){
-        Order order = new Order();
-        order.setId(order_model.getId());
-        order.setGrocerylistid(order_model.getGrocerylistid());
-        order.setOrderstatusid(order_model.getOrderstatusid());
-        order.setUserid(order_model.getUserid());
-        order.setAddress(order_model.getAddress());
-        order.setDatetime(order_model.getDatetime());
-        order.setPrice(order_model.getPrice());
+        if(order_model!=null){
+            Order order = new Order();
+            order.setId(order_model.getId());
+            order.setGrocerylistid(order_model.getGrocerylistid());
+            order.setOrderstatusid(order_model.getOrderstatusid());
+            order.setUserid(order_model.getUserid());
+            order.setAddress(order_model.getAddress());
+            order.setDatetime(order_model.getDatetime());
+            order.setPrice(order_model.getPrice());
 
-        return order;
+            return order;
+        }
+        else {
+            return null;
+        }
     }
 
     private OrderStatus_model convert(OrderStatus orderStatus){
-        OrderStatus_model orderStatus_model = new OrderStatus_model();
-        orderStatus_model.setId(orderStatus.getId());
-        orderStatus_model.setStatus(orderStatus.getStatus());
+        if(orderStatus!=null){
+            OrderStatus_model orderStatus_model = new OrderStatus_model();
+            orderStatus_model.setId(orderStatus.getId());
+            orderStatus_model.setStatus(orderStatus.getStatus());
 
-        return orderStatus_model;
+            return orderStatus_model;
+        }
+        else {
+            return null;
+        }
     }
 }

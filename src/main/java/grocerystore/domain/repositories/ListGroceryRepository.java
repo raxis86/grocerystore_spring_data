@@ -12,6 +12,11 @@ import java.util.UUID;
  * Created by raxis on 19.01.2017.
  */
 public interface ListGroceryRepository extends CrudRepository<ListGrocery,ListGroceryPK> {
+    @Override
+    <S extends ListGrocery> S save(S entity);
+
+    @Override
+    <S extends ListGrocery> Iterable<S> save(Iterable<S> entities);
 
     @Override
     ListGrocery findOne(ListGroceryPK listGroceryPK);
@@ -44,5 +49,5 @@ public interface ListGroceryRepository extends CrudRepository<ListGrocery,ListGr
 
     /*@Query("select b from Bank b where b.name = :name")
     Iterable<ListGrocery> findAllByGroceryId(@Param("name") String name);*/
-    Iterable<ListGrocery> findAllByGroceryid(UUID uuid);
+    Iterable<ListGrocery> findAllByGroceryid(UUID groceryid);
 }

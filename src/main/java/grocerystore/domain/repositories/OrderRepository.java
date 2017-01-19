@@ -3,12 +3,19 @@ package grocerystore.domain.repositories;
 import grocerystore.domain.entityes.Order;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
  * Created by raxis on 19.01.2017.
  */
 public interface OrderRepository extends CrudRepository<Order,UUID> {
+    @Override
+    <S extends Order> S save(S entity);
+
+    @Override
+    <S extends Order> Iterable<S> save(Iterable<S> entities);
+
     @Override
     Order findOne(UUID uuid);
 
