@@ -1,6 +1,5 @@
 package grocerystore.services.abstracts;
 
-import grocerystore.domain.exceptions.DAOException;
 import grocerystore.services.exceptions.CartServiceException;
 import grocerystore.services.models.Cart;
 

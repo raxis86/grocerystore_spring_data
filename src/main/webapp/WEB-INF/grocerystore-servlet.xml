@@ -40,7 +40,7 @@
         </property>
     </bean>
 
-    <sec:http>
+    <sec:http auto-config="true">
         <sec:intercept-url pattern="/" access="permitAll" />
         <sec:intercept-url pattern="/CartList" access="hasRole('ROLE_USER')"/>
         <sec:intercept-url pattern="/CartAdd" access="hasRole('ROLE_USER')"/>
@@ -61,9 +61,11 @@
                 username-parameter="email"
                 password-parameter="password"
                 default-target-url="/Index"/>
+
+        <sec:custom-filter before="FORM_LOGIN_FILTER" ref="customUsernamePasswordAuthenticationFilter"/>
     </sec:http>
 
-    <sec:authentication-manager>
+    <sec:authentication-manager id="authenticationManager">
         <sec:authentication-provider user-service-ref="userDetailsService">
             <sec:password-encoder ref="encoder" />
         </sec:authentication-provider>
@@ -71,6 +73,23 @@
 
     <bean id="encoder" class="grocerystore.services.security.GrocerystorePasswordEncoder" />
     <bean id="userDetailsService" class="grocerystore.services.security.UserDetailsServiceImpl"/>
+
+
+
+    <bean id="customUsernamePasswordAuthenticationFilter"
+                class="grocerystore.services.security.GrocerystoreUsernamePasswordAuthenticationFilter">
+        <property name="authenticationFailureHandler" ref="failureHandler"/>
+        <property name="authenticationManager" ref="authenticationManager"/>
+    </bean>
+
+
+    <bean id="failureHandler"
+                class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+        <property name="defaultFailureUrl" value="/Login?error=true"/>
+    </bean>
+
+
+
 
     <jee:jndi-lookup id="dataSource"
                      jndi-name="jdbc/mysqldb"

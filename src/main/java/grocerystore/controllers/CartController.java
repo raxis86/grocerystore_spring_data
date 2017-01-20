@@ -1,6 +1,5 @@
 package grocerystore.controllers;
 
-import grocerystore.domain.exceptions.DAOException;
 import grocerystore.services.abstracts.ICartService;
 import grocerystore.services.exceptions.CartServiceException;
 import grocerystore.services.models.Cart;
