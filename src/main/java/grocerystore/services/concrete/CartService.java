@@ -1,9 +1,7 @@
 package grocerystore.services.concrete;
 
-import grocerystore.domain.abstracts.IRepositoryGrocery;
 import grocerystore.domain.entityes.Grocery;
 import grocerystore.domain.models.Grocery_model;
-import grocerystore.domain.exceptions.DAOException;
 import grocerystore.domain.repositories.GroceryRepository;
 import grocerystore.services.abstracts.ICartService;
 import grocerystore.services.exceptions.CartServiceException;
@@ -14,6 +12,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+
+import static grocerystore.services.models.Converter.convert;
 
 /**
  * Created by raxis on 29.12.2016.
@@ -53,8 +53,8 @@ public class CartService implements ICartService {
 
     /**
      * Удаление продукта из корзины по коду продукта
-     * @param cart
-     * @param groceryid
+     * @param cart Cart of groceries
+     * @param groceryid id of grocery
      */
     @Override
     @Secured("ROLE_USER")
@@ -71,21 +71,4 @@ public class CartService implements ICartService {
         }
     }
 
-    private Grocery_model convert(Grocery grocery){
-        if(grocery!=null){
-            Grocery_model grocery_model = new Grocery_model();
-            grocery_model.setId(grocery.getId());
-            grocery_model.setParentid(grocery.getParentid());
-            grocery_model.setName(grocery.getName());
-            grocery_model.setPrice(grocery.getPrice());
-            grocery_model.setIscategory(grocery.isIscategory());
-            grocery_model.setQuantity(grocery.getQuantity());
-
-            return grocery_model;
-        }
-        else
-        {
-            return null;
-        }
-    }
 }

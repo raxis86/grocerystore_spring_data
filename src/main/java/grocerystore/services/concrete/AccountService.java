@@ -1,12 +1,9 @@
 package grocerystore.services.concrete;
 
-import grocerystore.domain.abstracts.IRepositoryRole;
-import grocerystore.domain.abstracts.IRepositoryUser;
 import grocerystore.domain.entityes.Role;
 import grocerystore.domain.entityes.User;
 import grocerystore.domain.models.Role_model;
 import grocerystore.domain.models.User_model;
-import grocerystore.domain.exceptions.DAOException;
 import grocerystore.domain.repositories.RoleRepository;
 import grocerystore.domain.repositories.UserRepository;
 import grocerystore.services.abstracts.IAccountService;
@@ -17,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static grocerystore.services.models.Converter.*;
 
 /**
  * Created by raxis on 29.12.2016.
@@ -36,66 +35,36 @@ public class AccountService implements IAccountService {
 
     /**
      * Метод для аутентификации пользователя
-     * @param userModel
-     * @return
+     * @param userModel user
+     * @return true if Ok
      */
     @Override
     public boolean logIn(User_model userModel) throws AccountServiceException {
-        /*Role_model role = null;
-        try {
-            role = roleHandler.getOne(userModel.getRoles().get(0));
-        } catch (DAOException e) {
-            logger.error("cant logIn",e);
-            throw new AccountServiceException("Невозможно осуществить вход в систему!",e);
-        }
-        return new AuthUser(userModel,role);*/
+        /*realizing by Spring Security*/
         return true;
     }
 
     /**
      * Метод для регистрации пользователя
-     * @param userModel
-     * @return
-     * @throws DAOException
+     * @param userModel user
+     * @return true if Ok
+     * @throws AccountServiceException service exception
      */
     @Override
     public boolean signIn(User_model userModel) throws AccountServiceException {
         try {
-            User user = convert(userModel);
+            List<Role> roleList = new ArrayList<>();
+            for(Role_model role_model:userModel.getRoles()) {
+                roleList.add(roleHandler.findOne(role_model.getId()));
+            }
+            User user = convert(userModel, roleList);
             userHandler.save(user);
-        } catch (DAOException e) {
+        } catch (Exception e) {
             logger.error("cant signIn!",e);
             throw new AccountServiceException("Невозможно зарегистрировать пользователя!",e);
         }
 
         return true;
-    }
-
-    private User convert(User_model user_model) throws DAOException {
-        if(user_model!=null){
-            User user = new User();
-            user.setId(user_model.getId());
-            user.setEmail(user_model.getEmail());
-            user.setPassword(user_model.getPassword());
-            user.setStatus(user_model.getStatus().toString());
-            user.setName(user_model.getName());
-            user.setLastname(user_model.getLastname());
-            user.setSurname(user_model.getSurname());
-            user.setPhone(user_model.getPhone());
-            user.setAddress(user_model.getAddress());
-
-            List<Role> roleList = new ArrayList<>();
-            for(Role_model role_model:user_model.getRoles()){
-                roleList.add(roleHandler.findOne(role_model.getId()));
-            }
-            user.setRoles(roleList);
-
-            return user;
-        }
-        else {
-            return null;
-        }
-
     }
 
 }

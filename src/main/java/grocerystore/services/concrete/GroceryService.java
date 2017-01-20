@@ -10,6 +10,7 @@ import grocerystore.services.abstracts.IGroceryService;
 import grocerystore.services.exceptions.FormGroceryException;
 import grocerystore.services.exceptions.GroceryServiceException;
 import grocerystore.services.exceptions.ValidateException;
+import grocerystore.services.models.Converter;
 import grocerystore.services.models.Message;
 import grocerystore.services.validators.abstracts.IValidator;
 import javafx.util.converter.BigDecimalStringConverter;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static grocerystore.services.models.Converter.convert;
 
 /**
  * Created by raxis on 29.12.2016.
@@ -67,7 +70,7 @@ public class GroceryService implements IGroceryService {
     public Grocery_model getGrocery(String groceryid) throws GroceryServiceException {
         Grocery_model groceryModel;
         try {
-            groceryModel =convert(groceryHandler.findOne(UUID.fromString(groceryid)));
+            groceryModel = convert(groceryHandler.findOne(UUID.fromString(groceryid)));
         } catch (Exception e) {
             logger.error("cant getGrocery",e);
             throw new GroceryServiceException("Продукт не найлен!",e);
@@ -78,7 +81,7 @@ public class GroceryService implements IGroceryService {
     @Override
     @Secured("ROLE_ADMIN")
     public void groceryCreate(String name, String price, String quantity) throws GroceryServiceException, FormGroceryException {
-        Grocery_model groceryModel = new Grocery_model();
+        Grocery grocery = new Grocery();
         Message message = new Message();
 
         try {
@@ -101,15 +104,15 @@ public class GroceryService implements IGroceryService {
             throw new FormGroceryException(message);
         }
 
-        groceryModel.setId(UUID.randomUUID());
-        groceryModel.setIscategory(false);
-        groceryModel.setParentid(new UUID(0L,0L));
-        groceryModel.setName(name);
-        groceryModel.setPrice(new BigDecimalStringConverter().fromString(price));
-        groceryModel.setQuantity(Integer.parseInt(quantity));
+        grocery.setId(UUID.randomUUID());
+        grocery.setIscategory(false);
+        grocery.setParentid(new UUID(0L,0L));
+        grocery.setName(name);
+        grocery.setPrice(new BigDecimalStringConverter().fromString(price));
+        grocery.setQuantity(Integer.parseInt(quantity));
 
         try {
-            groceryHandler.save(convert(groceryModel));
+            groceryHandler.save(grocery);
         } catch (Exception e) {
             logger.error("cant groceryCreate",e);
             throw new GroceryServiceException("Невозможно сохранить новый продукт!",e);
@@ -119,38 +122,26 @@ public class GroceryService implements IGroceryService {
     @Override
     @Secured("ROLE_ADMIN")
     public void groceryDelete(String groceryid) throws GroceryServiceException {
-        Grocery_model groceryModel;
-        List<ListGrocery_model> listGroceriesModel = new ArrayList<>();
-        List<ListGrocery> listGroceries = new ArrayList<>();
+        Grocery grocery;
+        List<ListGrocery> listGroceries;
 
         try {
-            groceryModel = convert(groceryHandler.findOne(UUID.fromString(groceryid)));
-            for(ListGrocery lg:listGroceryHandler.findAllByGroceryid(groceryModel.getId())){
-                if(lg!=null)listGroceriesModel.add(convert(lg));
-            }
-            groceryHandler.delete(groceryModel.getId());
+            grocery = groceryHandler.findOne(UUID.fromString(groceryid));
+            listGroceries = (List<ListGrocery>)listGroceryHandler.findAllByGroceryid(grocery.getId());
 
-            for (ListGrocery_model lgm:listGroceriesModel){
-                listGroceries.add(convert(lgm));
-            }
+            groceryHandler.delete(grocery.getId());
             listGroceryHandler.delete(listGroceries);
-           /* for(ListGrocery_model gl : listGroceries){
-                listGroceryHandler.delete(gl.getId());
-            }*/
         } catch (Exception e) {
             logger.error("cant getListByGeroceryId",e);
-            throw new GroceryServiceException("Невозможно получить список соответствий продуктов!",e);
-        } /*catch (DAOException e) {
-            logger.error("cant groceryDelete");
             throw new GroceryServiceException("Невозможно удалить продукт!",e);
-        }*/
+        }
 
     }
 
     @Override
     @Secured("ROLE_ADMIN")
     public void groceryUpdate(String groceryid, String name, String price, String quantity) throws GroceryServiceException, FormGroceryException {
-        Grocery_model groceryModel = null;
+        Grocery grocery;
         Message message = new Message();
 
         try {
@@ -174,14 +165,14 @@ public class GroceryService implements IGroceryService {
         }
 
         try {
-            groceryModel =convert(groceryHandler.findOne(UUID.fromString(groceryid)));
+            grocery = groceryHandler.findOne(UUID.fromString(groceryid));
 
-            if(groceryModel !=null){
-                groceryModel.setName(name);
-                groceryModel.setPrice(new BigDecimalStringConverter().fromString(price));
-                groceryModel.setQuantity(Integer.parseInt(quantity));
+            if(grocery !=null){
+                grocery.setName(name);
+                grocery.setPrice(new BigDecimalStringConverter().fromString(price));
+                grocery.setQuantity(Integer.parseInt(quantity));
 
-                groceryHandler.save(convert(groceryModel));
+                groceryHandler.save(grocery);
             }
             else {
                 throw new FormGroceryException(new Message("Продукт не найден в базе!", Message.Status.ERROR));
@@ -189,68 +180,6 @@ public class GroceryService implements IGroceryService {
         } catch (Exception e) {
             logger.error("cant groceryUpdate",e);
             throw new GroceryServiceException("Невозможно изменить информацию о продукте!",e);
-        }
-    }
-
-    private Grocery_model convert(Grocery grocery){
-        if(grocery!=null){
-            Grocery_model grocery_model = new Grocery_model();
-            grocery_model.setId(grocery.getId());
-            grocery_model.setParentid(grocery.getParentid());
-            grocery_model.setName(grocery.getName());
-            grocery_model.setPrice(grocery.getPrice());
-            grocery_model.setIscategory(grocery.isIscategory());
-            grocery_model.setQuantity(grocery.getQuantity());
-
-            return grocery_model;
-        }
-        else {
-            return null;
-        }
-    }
-
-    private Grocery convert(Grocery_model grocery_model){
-        if(grocery_model!=null){
-            Grocery grocery = new Grocery();
-            grocery.setId(grocery_model.getId());
-            grocery.setParentid(grocery_model.getParentid());
-            grocery.setName(grocery_model.getName());
-            grocery.setPrice(grocery_model.getPrice());
-            grocery.setIscategory(grocery_model.isIscategory());
-            grocery.setQuantity(grocery_model.getQuantity());
-
-            return grocery;
-        }
-        else {
-            return null;
-        }
-    }
-
-    private ListGrocery_model convert(ListGrocery listGrocery){
-        if(listGrocery!=null){
-            ListGrocery_model listGrocery_model = new ListGrocery_model();
-            listGrocery_model.setId(listGrocery.getId());
-            listGrocery_model.setGroceryId(listGrocery.getGroceryid());
-            listGrocery_model.setQuantity(listGrocery.getQuantity());
-
-            return listGrocery_model;
-        }
-        else {
-            return null;
-        }
-    }
-
-    private ListGrocery convert(ListGrocery_model listGroceryModel){
-        if(listGroceryModel!=null){
-            ListGrocery listGrocery = new ListGrocery();
-            listGrocery.setId(listGroceryModel.getId());
-            listGrocery.setGroceryid(listGroceryModel.getGroceryId());
-            listGrocery.setQuantity(listGroceryModel.getQuantity());
-
-            return listGrocery;
-        }
-        else {
-            return null;
         }
     }
 }

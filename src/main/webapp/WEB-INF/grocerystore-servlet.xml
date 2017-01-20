@@ -40,9 +40,6 @@
         </property>
     </bean>
 
-
-
-
     <sec:http>
         <sec:intercept-url pattern="/" access="permitAll" />
         <sec:intercept-url pattern="/CartList" access="hasRole('ROLE_USER')"/>
@@ -75,33 +72,9 @@
     <bean id="encoder" class="grocerystore.services.security.GrocerystorePasswordEncoder" />
     <bean id="userDetailsService" class="grocerystore.services.security.UserDetailsServiceImpl"/>
 
-
-    <!--<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/groceriesstore?characterEncoding=UTF-8&amp;verifyServerCertificate=false&amp;useSSL=false&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC"/>
-        <property name="username" value="root"/>
-        <property name="password" value="123"/>
-    </bean>
-
-    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-        <property name="packagesToScan" value="grocerystore.domain.entityes"/>
-        <property name="jpaVendorAdapter">
-            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
-        </property>
-        <property name="jpaProperties">
-            <props>
-                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-            </props>
-        </property>
-    </bean>-->
-
     <jee:jndi-lookup id="dataSource"
                      jndi-name="jdbc/mysqldb"
                      resource-ref="true" />
-
-    <!--<rep:repositories base-package="grocerystore.domain.repositories"
-                      entity-manager-factory-ref="entityManagerFactory"/>-->
 
     <rep:repositories base-package="grocerystore.domain.repositories"/>
 
@@ -122,37 +95,31 @@
         <property name="entityManagerFactory" ref="entityManagerFactory" />
     </bean>
 
-   <!-- <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
-    <bean id="emf" class=
-            "org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="persistenceUnitName" value="publishing"/>
-        <property name="dataSource" ref="dataSource" />
-        <property name="jpaVendorAdapter" ref="jpaVendorAdapter"/>
-        <property name="packagesToScan">
-            <list>
-                <value>grocerystore.domain.entityes</value>
-            </list>
-        </property>
-        <property name="jpaProperties">
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
             <props>
-                <prop key="javax.persistence.validation.mode">none</prop>
+                <prop key="grocerystore.services.exceptions.GroceryServiceException">
+                    exception
+                </prop>
+                <prop key="grocerystore.services.exceptions.CartServiceException">
+                    exception
+                </prop>
+                <prop key="grocerystore.services.exceptions.UserServiceException">
+                    exception
+                </prop>
+                <prop key="grocerystore.services.exceptions.AccountServiceException">
+                    exception
+                </prop>
+                <prop key="grocerystore.services.exceptions.GroceryServiceException">
+                    exception
+                </prop>
+                <prop key="grocerystore.services.exceptions.OrderServiceException">
+                    exception
+                </prop>
             </props>
         </property>
+        <property name="defaultErrorView" value="defaultexception"/>
     </bean>
-
-    <bean id="jpaVendorAdapter"
-          class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-        <property name="database" value="MYSQL" />
-        <property name="showSql" value="true"/>&lt;!&ndash;
-        <property name="generateDdl" value="false"/>
-        <property name="javax.persistence.validation.mode" value="NONE" />&ndash;&gt;
-        <property name="databasePlatform"
-                  value="org.hibernate.dialect.MySQLDialect" />
-    </bean>
-
-    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="emf" />
-    </bean>-->
 
 </beans>
 

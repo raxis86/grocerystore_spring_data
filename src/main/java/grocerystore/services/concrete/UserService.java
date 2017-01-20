@@ -1,14 +1,9 @@
 package grocerystore.services.concrete;
 
-import grocerystore.domain.abstracts.IRepositoryRole;
-import grocerystore.domain.abstracts.IRepositoryUser;
 import grocerystore.domain.entityes.Role;
 import grocerystore.domain.entityes.User;
 import grocerystore.domain.models.Role_model;
 import grocerystore.domain.models.User_model;
-import grocerystore.domain.exceptions.DAOException;
-import grocerystore.domain.exceptions.RoleException;
-import grocerystore.domain.exceptions.UserException;
 import grocerystore.domain.repositories.RoleRepository;
 import grocerystore.domain.repositories.UserRepository;
 import grocerystore.services.abstracts.IUserService;
@@ -22,10 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.jws.soap.SOAPBinding;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static grocerystore.services.models.Converter.*;
 
 /**
  * Created by raxis on 29.12.2016.
@@ -62,21 +58,20 @@ public class UserService implements IUserService {
 
         Message message = new Message();
         User_model userModel = new User_model();
-        User_model userModelByEmail;
-        Role_model roleModelByName;
+        User userByEmail=null;
+        Role roleByName=null;
         List<Role_model> roleModelList = new ArrayList<>();
 
         try {
-            roleModelByName = convert(roleHandler.findByRoleName(roleName));
-            roleModelList.add(roleModelByName);
-            userModelByEmail = convert(userHandler.findOneByEmail(email));
+            if(roleName!=null){
+                roleByName = roleHandler.findByRoleName(roleName);
+                roleModelList.add(convert(roleByName));
+                userByEmail = userHandler.findOneByEmail(email);
+            }
         } catch (Exception e) {
             logger.error("cant getOneByEmail",e);
             throw new UserServiceException("Невозможно определить пользователя!",e);
-        } /*catch (RoleException e) {
-            logger.error("cant role by name",e);
-            throw new UserServiceException("Невозможно определить пользователя!",e);
-        }*/
+        }
 
 
         try {
@@ -95,11 +90,11 @@ public class UserService implements IUserService {
             message.addErrorMessage(e.getMessage());
         }
 
-        if(userModelByEmail !=null){
+        if(userByEmail !=null){
             message.addErrorMessage("Пользователь с таким email уже существует в базе!");
         }
 
-        if(roleModelByName ==null){
+        if(roleByName ==null){
             message.addErrorMessage("Роли с таким наименованием не существует!");
         }
 
@@ -127,10 +122,10 @@ public class UserService implements IUserService {
         //Ищем, что существует юзер с таким email
         Message message = new Message();
         User_model userModel=null;
-        User_model userModelByEmail;
+        User userModelByEmail;
 
         try {
-            userModelByEmail = convert(userHandler.findOneByEmail(email));
+            userModelByEmail = userHandler.findOneByEmail(email);
         } catch (Exception e) {
             logger.error("cant getOneByEmail",e);
             throw new UserServiceException("Невозможно проверить пользователя!",e);
@@ -201,87 +196,15 @@ public class UserService implements IUserService {
         userModel.setPhone(phone);
 
         try {
-            userHandler.save(convert(userModel));
+            List<Role> roleList = new ArrayList<>();
+            for(Role_model role_model:userModel.getRoles()) {
+                roleList.add(roleHandler.findOne(role_model.getId()));
+            }
+            userHandler.save(convert(userModel,roleList));
         } catch (Exception e) {
             logger.error("cant update userModel",e);
             throw new UserServiceException("Невозможно сохранить изменения!",e);
         }
     }
 
-    private User_model convert(User user){
-        if(user!=null){
-            User_model user_model = new User_model();
-            user_model.setId(user.getId());
-            user_model.setEmail(user.getEmail());
-            user_model.setStatus(User_model.Status.valueOf(user.getStatus()));
-            user_model.setPassword(user.getPassword());
-            user_model.setName(user.getName());
-            user_model.setLastname(user.getLastname());
-            user_model.setSurname(user.getSurname());
-            user_model.setAddress(user.getAddress());
-            user_model.setPhone(user.getPhone());
-            return user_model;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    private List<Role_model> convertRoleList(List<Role> roleList){
-        List<Role_model> role_modelList = new ArrayList<>();
-        for(Role role:roleList){
-            role_modelList.add(convert(role));
-        }
-
-        return role_modelList;
-    }
-
-    private Role_model convert(Role role){
-        if(role!=null){
-            Role_model role_model = new Role_model();
-            role_model.setId(role.getId());
-            role_model.setRoleName(role.getRoleName());
-
-            return role_model;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-    private List<User_model> convertUserList(List<User> userList){
-        List<User_model> user_modelList = new ArrayList<>();
-        for(User u:userList){
-            user_modelList.add(convert(u));
-        }
-        return user_modelList;
-    }
-
-    private User convert(User_model user_model) throws DAOException {
-        if(user_model!=null){
-            User user = new User();
-            user.setId(user_model.getId());
-            user.setEmail(user_model.getEmail());
-            user.setPassword(user_model.getPassword());
-            user.setStatus(user_model.getStatus().toString());
-            user.setName(user_model.getName());
-            user.setLastname(user_model.getLastname());
-            user.setSurname(user_model.getSurname());
-            user.setPhone(user_model.getPhone());
-            user.setAddress(user_model.getAddress());
-
-            List<Role> roleList = new ArrayList<>();
-            for(Role_model role_model:user_model.getRoles()){
-                roleList.add(roleHandler.findOne(role_model.getId()));
-            }
-            user.setRoles(roleList);
-            return user;
-        }
-        else
-        {
-            return null;
-        }
-    }
 }

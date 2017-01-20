@@ -1,6 +1,5 @@
 package grocerystore.controllers;
 
-import grocerystore.domain.exceptions.DAOException;
 import grocerystore.services.abstracts.IGroceryService;
 import grocerystore.services.exceptions.FormGroceryException;
 import grocerystore.services.exceptions.GroceryServiceException;

@@ -11,9 +11,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * Created by raxis on 10.01.2017.
- */
 @EnableWebMvc
 @ControllerAdvice
 public class GlobalExceptionController {
@@ -23,34 +20,6 @@ public class GlobalExceptionController {
     public ModelAndView formUserExceptionHandler(FormUserException e, HttpServletRequest request){
         ModelAndView model = new ModelAndView(request.getRequestURI().split("/")[1].toLowerCase());
         model.addObject("messages",e.getExceptionMessage().getMessagesError());
-        return model;
-    }
-
-    @ExceptionHandler(UserServiceException.class)
-    public ModelAndView userServiceExceptionHandler(UserServiceException e){
-        ModelAndView model = new ModelAndView("exception");
-        model.addObject("message",e.getMessage());
-        return model;
-    }
-
-    @ExceptionHandler(AccountServiceException.class)
-    public ModelAndView accountServiceExceptionHandler(AccountServiceException e){
-        ModelAndView model = new ModelAndView("exception");
-        model.addObject("message",e.getMessage());
-        return model;
-    }
-
-    @ExceptionHandler(CartServiceException.class)
-    public ModelAndView cartServiceExceptionHandler(CartServiceException e){
-        ModelAndView model = new ModelAndView("exception");
-        model.addObject("message",e.getMessage());
-        return model;
-    }
-
-    @ExceptionHandler(GroceryServiceException.class)
-    public ModelAndView groceryServiceExceptionHandler(GroceryServiceException e){
-        ModelAndView model = new ModelAndView("exception");
-        model.addObject("message",e.getMessage());
         return model;
     }
 
@@ -69,12 +38,5 @@ public class GlobalExceptionController {
             model.addObject("groceryid",s);
             return model;
         }
-    }
-
-    @ExceptionHandler(OrderServiceException.class)
-    public ModelAndView groceryServiceExceptionHandler(OrderServiceException e){
-        ModelAndView model = new ModelAndView("exception");
-        model.addObject("message",e.getMessage());
-        return model;
     }
 }

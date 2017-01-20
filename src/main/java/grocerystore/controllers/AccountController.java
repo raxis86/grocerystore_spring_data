@@ -58,7 +58,7 @@ public class AccountController {
                          @RequestParam("address") String address)
             throws UserServiceException, FormUserException, AccountServiceException {
 
-        boolean isSignin=false;
+        boolean isSignin;
 
         isSignin = accountService.signIn(userService.formUser(email,password,name,lastname,
                 surname,address,phone,"ROLE_USER"));

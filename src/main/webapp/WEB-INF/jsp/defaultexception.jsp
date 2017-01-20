@@ -51,14 +51,7 @@
     </nav>
 </div>
 
-    <c:set var="newLine" value="(\\r\\n|\\n)" />
-    <c:set var="splitMessage" value="${exception.message.split(newLine)}" />
-
-    <H2>${splitMessage[0]}</H2>
-
-    <c:forEach var="i" begin="1" end="${fn:length(splitMessage)}">
-        <c:out value="${splitMessage[i]}"/><br>
-    </c:forEach>
+<H2>Что-то пошло не так...</H2>
 
 </body>
 </html>

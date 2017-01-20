@@ -11,18 +11,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
         <res-auth>Container</res-auth>
     </resource-ref>
 
-    <!--<listener>
-        <listener-class>
-            org.springframework.web.context.ContextLoaderListener
-        </listener-class>
-    </listener>
-
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>/WEB-INF/spring-context/*.xml</param-value>
-    </context-param>-->
-    
-
     <filter>
         <filter-name>encodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
